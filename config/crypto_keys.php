@@ -1,5 +1,5 @@
 <?php
-// Kunci untuk Vigenere Cipher (buat sekompleks mungkin)
+// Kunci untuk Vigenere Cipher
 define('VIGENERE_KEY', 'INIKUNCIPROYEKTAKRIPTOGRAFI');
 
 // Kunci AES-256 (HARUS 32 bytes)

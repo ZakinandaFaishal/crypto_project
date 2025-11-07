@@ -27,11 +27,16 @@ switch ($type) {
         break;
     case 'file':
         $table = 'secure_files';
-        $file_path_column = 'encrypted_file_path'; // Kolom path file fisik
+        $file_path_column = 'encrypted_file_path';
         break;
     case 'stego':
         $table = 'stego_images';
-        $file_path_column = 'image_path'; // Kolom path file fisik
+        $file_path_column = 'image_path';
+        break;
+    // --- TAMBAHAN UNTUK AUDIO ---
+    case 'audio':
+        $table = 'stego_audio';
+        $file_path_column = 'audio_path'; // Kolom path dari stego_audio
         break;
     default:
         header('Location: ../views/dashboard.php?error=Tipe item tidak valid');
@@ -46,7 +51,23 @@ if ($file_path_column) {
     $item = $stmt->fetch(\PDO::FETCH_ASSOC);
     
     if ($item) {
-        $server_file_path = '..' . $item[$file_path_column]; // e.g., ../uploads/files/file.enc
+        
+        // --- LOGIKA PATH BARU (Untuk menangani inkonsistensi) ---
+        $db_path = $item[$file_path_column]; // e.g., /skap-pemerintah/uploads/... ATAU /uploads/...
+        $server_file_path = '';
+
+        // Cek apakah path berisi awalan /skap-pemerintah
+        if (strpos($db_path, '/skap-pemerintah') === 0) {
+            // Jika ya, hapus awalan itu
+            $relative_path = str_replace('/skap-pemerintah', '', $db_path);
+            // Buat path relatif dari folder /controllers/
+            $server_file_path = '..' . $relative_path; // Menjadi ../uploads/audio/file.wav
+        } else {
+            // Jika tidak, gunakan logika lama
+            $server_file_path = '..' . $db_path; // Menjadi ../uploads/files/file.enc
+        }
+        // --- AKHIR LOGIKA PATH BARU ---
+
         if (file_exists($server_file_path)) {
             @unlink($server_file_path); // Hapus file fisik dari server
         }
