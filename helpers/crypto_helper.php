@@ -68,4 +68,4 @@ function super_decrypt($base64_encrypted_data) {
     
     return vigenere_decrypt($vigenere_ciphertext, VIGENERE_KEY);
 }
-?>root
+?>
